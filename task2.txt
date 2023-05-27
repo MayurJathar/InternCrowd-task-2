@@ -1,0 +1,107 @@
+
+import java.io.*;
+import java.util.*;
+
+class PhoneBook {
+    private static final String FILE_NAME = "PhoneBook.txt";
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int choice;
+
+        do {
+            System.out.println("Phone Book");
+            System.out.println("1. Add contact");
+            System.out.println("2. Display all contacts");
+            System.out.println("3. Search contact");
+            System.out.println("4. Exit");
+            System.out.print("Enter your choice: ");
+            choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    addContact();
+                    break;
+                case 2:
+                    displayContacts();
+                    break;
+                case 3:
+                    searchContact();
+                    break;
+                case 4:
+                    System.out.println("Exiting Phone Book...");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        } while (choice != 4);
+
+        scanner.close();
+    }
+
+    private static void addContact() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter phone number: ");
+        String phoneNumber = scanner.nextLine();
+
+        try (FileWriter fileWriter = new FileWriter(FILE_NAME, true);
+             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+             PrintWriter printWriter = new PrintWriter(bufferedWriter)) {
+            printWriter.println(name + "," + phoneNumber);
+            System.out.println("Contact added successfully.");
+        } catch (IOException e) {
+            System.out.println("Failed to add contact: " + e.getMessage());
+        }
+    }
+
+    private static void displayContacts() {
+        try (FileReader fileReader = new FileReader(FILE_NAME);
+             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+            String line;
+            int count = 0;
+
+            System.out.println("Contacts:");
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] contact = line.split(",");
+                System.out.println((++count) + ". Name: " + contact[0] + ", Phone Number: " + contact[1]);
+            }
+
+            if (count == 0) {
+                System.out.println("No contacts found.");
+            }
+        } catch (IOException e) {
+            System.out.println("Failed to display contacts: " + e.getMessage());
+        }
+    }
+
+    private static void searchContact() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter name to search: ");
+        String nameToSearch = scanner.nextLine();
+
+        try (FileReader fileReader = new FileReader(FILE_NAME);
+             BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+            String line;
+            int count = 0;
+
+            System.out.println("Search Results:");
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] contact = line.split(",");
+                if (contact[0].equalsIgnoreCase(nameToSearch)) {
+                    System.out.println("Name: " + contact[0] + ", Phone Number: " + contact[1]);
+                    count++;
+                }
+            }
+
+            if(count == 0) {
+                System.out.println("No contacts found.");
+            }
+        } catch (IOException e) {
+            System.out.println("Failed to search contacts: " + e.getMessage());
+        }
+    }
+}
